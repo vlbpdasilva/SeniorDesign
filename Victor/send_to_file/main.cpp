@@ -2,7 +2,6 @@
 *	@file : main.cpp
 *	@author :  Victor Luiz Berger da Silva
 *	@date :  Dec 1, 2016
-*
 *	Parses GPS text input, separates TIME/LAT/LONG information.
 *	Produces new text output file with name "..._result.txt"
 */
@@ -44,8 +43,7 @@ int main(int argc, const char * argv[])
 		return 1;
 	}	
 	fileName.erase(fileName.end()-4,fileName.end());
-	std::string finalName = fileName.append("_result.txt");
-	outFile.open(finalName);
+	outFile.open(fileName.append("_result.txt"));
 	while(getline(input, str))
 		parse_GPS_string(str);
 	input.close();
