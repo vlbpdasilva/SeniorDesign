@@ -11,7 +11,8 @@ bool parse_GPS_string(std::string S);
 
 int main()
 {
-   	std::string fileName, str;
+    std::string fileName, str;
+
 	std::cout << "Enter name of file, or press enter for example. ";
 	getline(std::cin, fileName);
 	if(fileName.empty()) fileName = "20161107_123249_Test.txt";
@@ -24,7 +25,7 @@ int main()
 		input.close();
 	}
 
-	return 0;
+    return 0;
 }
 
 bool parse_GPS_string(std::string S) 
