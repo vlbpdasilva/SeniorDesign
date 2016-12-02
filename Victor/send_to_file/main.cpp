@@ -10,14 +10,15 @@
 #include <iostream>
 #include <string>
 
-std::string fileName;
+std::string fileName, prefix_match;
 std::ofstream outFile;
 int counter;
 bool parse_GPS_string(std::string S);
 
 int main(int argc, const char * argv[])
 {
-	counter = 0;
+	counter = 1;
+	prefix_match = "$GPGGA";
     	std::string str;
 	char yesOrNo;
 	if(argc>1)fileName = argv[1];
@@ -55,7 +56,6 @@ int main(int argc, const char * argv[])
 
 bool parse_GPS_string(std::string S) 
 {
-	std::string prefix_match = "$GPGGA";
 	if(!S.compare(0, prefix_match.size(), prefix_match))   // Input string starts with "$GPGGA"
 	{
 		outFile << counter <<"\r\nTime: " << S.substr(7, 9)  << "  ";
