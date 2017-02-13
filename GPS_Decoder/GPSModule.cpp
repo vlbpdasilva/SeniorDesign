@@ -14,6 +14,8 @@ GPSModule::GPSModule(float inLATmin, float inLATmax, float inLONmin, float inLON
 {
   innerWindow = new float[4];
   outerWindow = new float[4];
+  
+  gpsStringCounter = 0;
 
   //set inner window
   innerLATmin = innerWindow[0] = inLATmin;
@@ -40,6 +42,13 @@ GPSModule::GPSModule(float inLATmin, float inLATmax, float inLONmin, float inLON
   //initialize default flags
   insideInnerWindow = false;
   outsideOuterWindow = false;
+
+  //initialize default char positions
+  latStartPosition = 0;
+  lonStartPosition = 0;
+  altStartPosition = 0;
+  latStringLength = 0;
+  lonStringLength = 0;
 
 } // end constructor
 
@@ -105,12 +114,7 @@ float GPSModule::getCurrAltitude()
 {
   return currAltitude;
 }
-/**
-void GPSModule::setCurrAltitude(float alt)
-{
-  currAltitude = alt;
-}
-**/
+
 float GPSModule::getPrevAltitude()
 {
   return prevAltitude;
@@ -121,47 +125,68 @@ void GPSModule::setPrevAltitude(float alt)
   prevAltitude = alt;
 }
 
-/**
-char GPSModule::getCurrDirection()
-{
-  return currDirection;
-} // end function getCurrDirection
-char GPSModule::getPrevDirection()
-{
- return prevDirection;
-} // end function getPrevDirection
-**/
-/**
-void GPSModule::parsePositionString(std::string S)
-{
-	std::string prefix_match = "$GPGGA";
-	if(!S.compare(0, prefix_match.size(), prefix_match))   // Input string starts with "$GPGGA"
-	{
-		std::cout << std::setprecision(12) << "Time: " << S.substr(7, 9)  << std::endl;
-		std::cout << std::setprecision(12) << "Lat:  " << S.substr(17,12) << " " << S.substr(30,1) << std::endl;
-		std::cout << std::setprecision(12) << "Long: " << S.substr(32,12) << " " << S.substr(46,1) << std::endl;
-	}
-	std::cout << std::endl;	
-} // end function parsePositionString
-**/
 void GPSModule::updatePosition(std::string S)
 {
-	std::string prefix_match = "$GPGGA";
-	if(!S.compare(0, prefix_match.size(), prefix_match))   // Input string starts with "$GPGGA"
-	{
-		currentLON = std::stof(S.substr(32,12));
-		currentLAT = std::stof(S.substr(17,12));
-		currDirectionLON = S[30];
-		currDirectionLAT = S[46];
+	gpsStringCounter++;
+	currentLON = std::stof(S.substr(lonStartPosition,lonStringLength));
+	currentLAT = std::stof(S.substr(latStartPosition,latStringLength));
+	currDirectionLON = S[lonDirectionPosition];
+	currDirectionLAT = S[latDirectionPosition];
+	std::cout << " 12313" << std::endl;
+	std::cout << S.substr(lonStartPosition,lonStringLength) << std::endl;
+
 		
-		/// TO PRINT TO SCREEN:
-		std::cout << std::setprecision(12) << currentLAT << '\n';
-		std::cout << std::setprecision(12) << currentLON << '\n';
-		std::cout << '\n' << currDirectionLON << "   " << currDirectionLAT << std::endl;	
-	}	
+/// TO PRINT TO SCREEN:
+
+	std::cout << gpsStringCounter << std::endl;
+	std::cout << std::setprecision(12) << currentLAT << " " << currDirectionLAT << " ";
+	std::cout << std::setprecision(12) << currentLON << " " <<  currDirectionLON << '\n' << std::endl;
+
 }
 
 void GPSModule::writeToLog(float LAT, float LON, float alt, char direction)
 {
+/**
+	TODO: WRITE WRITETOLOG FUNCTION IF REQUIRED
+**/
+} 
 
-} // end function writeToLog
+void GPSModule::findCoordPositionsInString(std::string s)
+{
+	latStringLength = -1;
+	lonStringLength = -1;
+	int count = 0;
+	bool pos;
+
+	for (int i = 0; i < s.length(); i++)
+	{
+		pos = false;
+
+		if (s[i] == ',')
+		{	
+			count++;
+			pos = true;
+		}
+
+		switch (count)
+		{
+			case 2:
+				latStartPosition = ((pos) ? i + 1 : latStartPosition);
+				latStringLength++;
+				break;
+			case 3: 
+				latDirectionPosition = ((pos) ? i+1 : latDirectionPosition);
+				break;
+			case 4:
+				lonStartPosition = ((pos) ? i + 1 : lonStartPosition);
+				lonStringLength++;
+				break;
+			case 5:
+				lonDirectionPosition = ((pos) ? i+1 : lonDirectionPosition);
+				break;
+				
+			//TODO further string extraction -- ALTITUDE?
+
+		}			
+	}
+} // end function findCoordPositionsInString

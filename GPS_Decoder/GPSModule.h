@@ -1,6 +1,6 @@
 /**
   * @file GPSModule.h
-  * @author William Teeple
+  * @author William Teeple and Victor Luiz da Silva
   * @date 12/01/2016
   * Description: Header file for GPS Module class
   */
@@ -139,8 +139,21 @@ public:
     *	@return : None
     */
   void writeToLog(float LAT, float LON, float alt, char direction);
-  
+
+  /**
+    *	@pre : 
+    *	@post :
+    *	@return :
+    */
   void parsePositionString(std::string S);
+
+  /**
+    *	@pre : Existing GPSModule, GPS string available
+    *	@post : Sets member variables for character positions
+    *	@return : None
+    */
+  void findCoordPositionsInString(std::string S);
+  int gpsStringCounter;
 
 private:
   //location variables
@@ -160,6 +173,15 @@ private:
   //flags
   bool insideInnerWindow; // flag for entering the inner window
   bool outsideOuterWindow; // flag for leaving the outer window
+
+  //string positions
+  int latStartPosition;
+  int lonStartPosition;
+  int lonDirectionPosition, latDirectionPosition;
+  int altStartPosition;
+  int latStringLength;
+  int lonStringLength;
+  
 };
 
 #endif
